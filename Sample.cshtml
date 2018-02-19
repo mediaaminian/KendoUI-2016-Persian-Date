@@ -1,0 +1,46 @@
+﻿<script src="~/Scripts/kendo/2016.2.504/fa-IR.js"></script>
+<script src="~/Scripts/kendo/2016.2.504/JalaliDate.js"></script>
+<script src="~/Scripts/kendo/2016.2.504/kendo.web.js"></script>
+
+        <script>
+            $(document).ready(function () {
+
+                kendo.culture("fa-IR");
+            })
+
+
+        </script>
+
+@Html.Kendo().DatePicker().Name("RegisterDate")
+@Html.Kendo().DatePickerFor().Name(model=>model.RegisterDate)
+
+
+@(Html.Kendo().Grid(Model)
+.Name("RegisterationInformation")
+.Columns(columns =>
+{
+
+    columns.Bound(p => p.RegisterDate).ClientTemplate("#= RegisterDate ? kendo.toString(RegisterDate, 'PersianDateFormat') : '' #").Filterable(ftb => ftb.Extra(false).Operators(oper => oper.ForDate(dat => dat.Clear().IsGreaterThanOrEqualTo("از تاریخ").IsLessThanOrEqualTo("تا تاریخ"))).Extra(true).Messages(mes => mes.Info("ابتدا و انتها بازه را مشخص کنید")));
+    columns.Command(command => { command.Edit(); });
+
+
+})
+.Editable(editable => editable.TemplateName("CorrectiveAction").Mode(GridEditMode.PopUp).DisplayDeleteConfirmation(true))
+
+.Pageable()
+.Filterable()
+.DataSource(dataSource => dataSource
+.Ajax()
+.PageSize(30)
+.Events(ev => ev.Sync("refreshFunc"))
+.Model(model =>
+{
+    model.Id(p => p.Id);
+    model.Field(field => field.Id).Editable(false);
+})
+        .Read("Read", "RegisterationInformation")
+        .Update("Update", "RegisterationInformation")
+)
+    .Resizable(resize => resize.Columns(true))
+    .Reorderable(reorder => reorder.Columns(true))
+)
